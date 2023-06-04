@@ -19,7 +19,7 @@ Specifically, `xpm` makes the most commonly used commands easier to execute. Exa
 - docbuild
 - run
 - exec
-- echo
+- print
 
 ### xpm config
 
@@ -38,6 +38,9 @@ build:
     scheme: xpm # will ask you to pick one at first time
     configuration: Debug # or Release
     sdk: iphoneos # or iphonesimulator, etc.
+    beautify: true # use xcbeautify or xcpretty to beautify output logs
+    logLevel: error # only print logs which level are equal to or more serious than the given value
+    generateBuildServerFile: false # use xcode-build-server to generate buildServer.json file
 run:
   type: device # or simulator
   target:
@@ -64,9 +67,23 @@ And you can also configure some basic configs(like autoChange and mode) at `~/.x
 | xpm install bundle | bundle install                            |
 | xpm install pod    | bundle exec pod install                   |
 
-TOOD: xpm install bundle is even longer than bundle install.
+TODO: xpm install bundle is even longer than bundle install.
 
 ### xpm build
+
+`xpm build` helps to build your project and shows building logs of specific levels.
+
+#### In xcodebuild mode
+
+When running `xpm build` for the first time, `xpm` will ask you to select default configs and will write to `.xpm.yml` file to pwd. When already having `.xpm.yml`, `xpm` will use the configs in the file.
+
+We know manually input workspace or project or scheme name is kind of pain, so we add completion as you type <tab> when need input them.
+
+Besides, the most different thing is that, you can update configs in the config file through command line instead of manually edit it. A simple process is like:
+
+1. Run `xpm build -sdk ` and press tab, `xpm` will give a list of all available sdks, you can choose one to finish the completion.
+2. Currently the command is like `xpm build -sdk iphonesimulator`, and if `config.autoChange` is true and you execute the command, `build.xcodebuild.sdk` will update it's value to `iphonesimulator`(You'll never manually input the long `iphonesimulator` anymore!). You can also add `--no-save` flag to avoid updating the config.
+3. Vice versa, when `config.autoChange` is false and you can add `--save` flag to force updating the config.
 
 ### xpm docbuild
 
@@ -80,6 +97,6 @@ For DocC documentation generating, similar as xcodebuild docbuild.
 
 Used as executing shell scripts configured in `exec.scripts`.
 
-### xpm echo
+### xpm print
 
 Print basic infomation about the project, used as interacting with other command line tools.
