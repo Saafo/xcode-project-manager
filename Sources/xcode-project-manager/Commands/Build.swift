@@ -1,8 +1,13 @@
+//
+//  Build.swift
+//  
+//
+//  Created by Saafo on 2023/6/4.
+//
+
 import ArgumentParser
 
-@main
-struct XCBuild: ParsableCommand {
-
+struct Build: ParsableCommand {
     // MARK: - Project
     @Option
     var workspace: String?
@@ -45,3 +50,4 @@ struct XCBuild: ParsableCommand {
         print("run")
     }
 }
+

@@ -41,6 +41,7 @@ build:
     beautify: true # use xcbeautify or xcpretty to beautify output logs
     logLevel: error # only print logs which level are equal to or more serious than the given value
     generateBuildServerFile: false # use xcode-build-server to generate buildServer.json file
+    continueBuildingAfterErrors: false
 run:
   type: device # or simulator
   target:
