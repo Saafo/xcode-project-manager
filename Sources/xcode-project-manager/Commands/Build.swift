@@ -7,7 +7,7 @@
 
 import ArgumentParser
 
-struct Build: ParsableCommand {
+struct Build: AsyncParsableCommand {
     // MARK: - Project
     @Option
     var workspace: String?
@@ -18,22 +18,19 @@ struct Build: ParsableCommand {
     @Option
     var scheme: String?
 
+    @Option
+    var configuration: ConfigModel.Build.Xcodebuild.Configuration?
+
+    @Option
+    var sdk: ConfigModel.Build.Xcodebuild.SDK?
+
     // MARK: - Flags
-
-    @Flag
-    var simulator: Bool = false
-
-    @Flag
-    var releaseMode: Bool = false
 
     @Flag
     var continueBuildingAfterErrors: Bool = false
 
     @Flag
     var noBeautify: Bool = false
-
-    @Flag
-    var pipeToFile: Bool = false
 
     // MARK: - Errors
     enum Errors: Error {
