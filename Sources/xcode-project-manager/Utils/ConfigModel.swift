@@ -27,11 +27,11 @@ struct ConfigModel: Codable {
             var workspace: String?
             var project: String?
             var scheme: String?
-            enum Configuration: String, Codable, ExpressibleByArgument {
+            enum Configuration: String, Codable {
                 case debug, release
             }
             var configuration: Configuration = .debug
-            enum SDK: String, Codable, ExpressibleByArgument {
+            enum SDK: String, Codable {
                 case iphoneos
                 case iphonesimulator
             }
@@ -52,3 +52,7 @@ struct ConfigModel: Codable {
     var install = Install()
     var build = Build()
 }
+
+extension ConfigModel.Build.Xcodebuild.Configuration: ExpressibleByArgument {}
+extension ConfigModel.Build.Xcodebuild.SDK: ExpressibleByArgument {}
+extension ConfigModel.Build.Xcodebuild.LogLevel: ExpressibleByArgument {}

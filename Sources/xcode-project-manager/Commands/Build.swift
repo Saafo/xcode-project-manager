@@ -24,13 +24,22 @@ struct Build: AsyncParsableCommand {
     @Option
     var sdk: ConfigModel.Build.Xcodebuild.SDK?
 
+    @Option
+    var logLevel: ConfigModel.Build.Xcodebuild.LogLevel = .error
+
     // MARK: - Flags
+
+    @Flag
+    var noBeautify: Bool = false
+
+    @Flag
+    var generateBuildServerFile: Bool = false
 
     @Flag
     var continueBuildingAfterErrors: Bool = false
 
-    @Flag
-    var noBeautify: Bool = false
+    @OptionGroup
+    var saveOptions: SaveOptions
 
     // MARK: - Errors
     enum Errors: Error {
@@ -41,10 +50,16 @@ struct Build: AsyncParsableCommand {
         if workspace != nil, project != nil {
             throw Errors.cannotSpecifyWorkspaceAndProjectSimultaneously
         }
+        try saveOptions.checkOptionsValid()
     }
 
-    mutating func run() throws {
-        print("run")
+    mutating func run() async throws {
+        try await updateConfig()
+    }
+
+    func updateConfig() async throws {
+        var config = try await ConfigCenter.loadConfig()
+        let shouldSave = saveOptions.shouldSave(autoSave: config.config.autoChange)
     }
 }
 
