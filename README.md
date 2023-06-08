@@ -20,6 +20,7 @@ Specifically, `xpm` makes the most commonly used commands easier to execute. Exa
 - run
 - exec
 - print
+- clean
 
 ### xpm config
 
