@@ -16,7 +16,7 @@ enum ConfigCenter {
         if let localConfig = try await loadLocalConfig() {
             return localConfig
         } else {
-            print("Local config not found, create default local config from global config")
+            Log.info("Local config not found, create default local config from global config")
             let globalConfig = try await loadGlobalConfig()
             try await updateLocalConfig(globalConfig)
             return globalConfig
@@ -45,7 +45,7 @@ enum ConfigCenter {
 
     private static func createDefaultGlobalConfig() async throws -> ConfigModel {
         let globalConfigFile = globalConfigFilePath
-        print("Global config not found, create default config at \(globalConfigFile)")
+        Log.info("Global config not found, create default config at \(globalConfigFile)")
         let defaultConfig = ConfigModel()
         let encoder = YAMLEncoder()
         let encodedYAML = try encoder.encode(defaultConfig)
