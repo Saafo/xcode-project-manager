@@ -36,7 +36,7 @@ struct ConfigModel: Codable {
                 case iphonesimulator
             }
             var sdk: SDK = .iphonesimulator
-            var beautify: Bool = true
+            var noBeautify: Bool = false
             enum LogLevel: String, Codable {
                 case error, warning, message
             }
@@ -44,6 +44,7 @@ struct ConfigModel: Codable {
             var generateBuildServerFile: Bool = false
             var continueBuildingAfterErrors: Bool = false
         }
+        var xcodebuild = Xcodebuild()
     }
     struct Run: Codable {} // TODO
     struct Exec: Codable {} // TODO
