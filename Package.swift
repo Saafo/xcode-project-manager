@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "xcode-project-manager",
-    platforms: [.macOS(.v10_15)],
+    platforms: [.macOS(.v12)],
     products: [.executable(name: "xpm", targets: ["xcode-project-manager"])],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
