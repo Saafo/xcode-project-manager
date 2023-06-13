@@ -18,11 +18,11 @@ enum Log {
     }
 
     static func info(_ message: String) {
-        print("ℹ", message)
+        print("💡", message.tint(with: .green))
     }
 
     static func debug(_ message: String) {
-        print(message.tint(with: .magenta))
+        print(message)
     }
 
 }
