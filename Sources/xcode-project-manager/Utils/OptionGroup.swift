@@ -14,13 +14,9 @@ struct SaveOptions: ParsableArguments {
     @Flag
     var noSave: Bool = false
 
-    enum Errors: Error {
-        case cannotSpecifySaveAndNoSaveSimultaneously
-    }
-
     func checkOptionsValid() throws {
         if save, noSave {
-            throw Errors.cannotSpecifySaveAndNoSaveSimultaneously
+            throw ValidationError("Cannot specify `--save` and `--no-save` simultaneously")
         }
     }
 

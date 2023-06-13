@@ -44,14 +44,9 @@ struct Build: AsyncParsableCommand {
     @OptionGroup
     var saveOptions: SaveOptions
 
-    // MARK: - Errors
-    enum Errors: Error {
-        case cannotSpecifyWorkspaceAndProjectSimultaneously
-    }
-
     func validate() throws {
         if workspace != nil, project != nil {
-            throw Errors.cannotSpecifyWorkspaceAndProjectSimultaneously
+            throw ValidationError("Cannot specify workspace and project simultaneously")
         }
         try saveOptions.checkOptionsValid()
     }
