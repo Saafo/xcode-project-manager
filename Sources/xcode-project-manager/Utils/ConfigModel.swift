@@ -5,7 +5,6 @@
 //  Created by Saafo on 2023/6/5.
 //
 
-import Foundation
 import ArgumentParser
 
 struct ConfigModel: Codable {
@@ -29,6 +28,9 @@ struct ConfigModel: Codable {
             var scheme: String?
             enum Configuration: String, Codable {
                 case debug, release
+                var commandValue: String {
+                    rawValue.capitalized
+                }
             }
             var configuration: Configuration = .debug
             enum SDK: String, Codable {

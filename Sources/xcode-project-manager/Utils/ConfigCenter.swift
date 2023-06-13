@@ -45,7 +45,7 @@ enum ConfigCenter {
 
     private static func createDefaultGlobalConfig() async throws -> ConfigModel {
         let globalConfigFile = globalConfigFilePath
-        Log.info("Global config not found, create default config at \(globalConfigFile)")
+        Log.info("Global config not found, create default config at \(globalConfigFile.absoluteString)")
         let defaultConfig = ConfigModel()
         let encoder = YAMLEncoder()
         let encodedYAML = try encoder.encode(defaultConfig)
