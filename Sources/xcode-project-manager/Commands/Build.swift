@@ -7,19 +7,20 @@
 
 import ArgumentParser
 import Foundation // ProcessInfo
+import XcodeProj // XCScheme
 
 struct Build: AsyncParsableCommand {
     // MARK: - Project
-    @Option
+    @Option(name: [.long, .short])
     var workspace: String?
 
-    @Option
+    @Option(name: [.long, .short])
     var project: String?
 
-    @Option
+    @Option(name: [.long, .short])
     var scheme: String?
 
-    @Option
+    @Option(name: [.long, .short])
     var configuration: ConfigModel.Build.Xcodebuild.Configuration?
 
     @Option
@@ -143,8 +144,32 @@ struct Build: AsyncParsableCommand {
             command += " -IDEBuildingContinueBuildingAfterErrors=YES"
         }
         command += " build"
-        Log.debug("Executing: \(command)")
-        let output = try ShellExecutor.run(command)
+        let time = Date().formatted(Date
+            .ISO8601FormatStyle(timeZone: .current)
+            .year().month().day()
+            .dateSeparator(.dash)
+            .timeSeparator(.colon)
+            .time(includingFractionalSeconds: true)
+            .timeZone(separator: .omitted)
+        )
+        let buildLogDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("xpm", isDirectory: true)
+            .appendingPathComponent("log", isDirectory: true)
+            .appendingPathComponent("build", isDirectory: true)
+            .appendingPathComponent(time.description, isDirectory: true)
+        try FileManager.default.createDirectory(at: buildLogDir, withIntermediateDirectories: true)
+        let rawFilePath = buildLogDir.appendingPathComponent("xcodebuild-raw.log").path
+        let beautifyPath = buildLogDir.appendingPathComponent("xcodebuild-beautify.log").path
+        let run = "\(command) 2>&1 | tee \(rawFilePath) | xcbeautify | tee \(beautifyPath)"
+        Log.debug("Executing \(run)")
+        let outputStream = Shell.run(run)
+        for try await output in outputStream {
+            // TODO: remove old outputs to only show building tasks
+            // TODO: add xcbeautify's quiet and quieter options
+            print(output)
+        }
+        Log.info("The original build log is saved at \(rawFilePath), and the beautified log is saved at \(beautifyPath)")
+
     }
 
     private func findDefaultWorkspace() async throws -> String? {
@@ -183,18 +208,13 @@ struct Build: AsyncParsableCommand {
         guard let project else {
             throw ValidationError("Cannot find default scheme because no project found")
         }
-        // TODO: can we not depend on `Xcodeproj`?
-        guard let output = try await ShellExecutor
-            .run(#"bundle exec ruby -e "require 'xcodeproj'; print(Xcodeproj::Project.open('\#(project)').root_object.targets.first)""#)
-            .first(where: { _ in true }) else {
+        let proj = try XcodeProj(pathString: project)
+        if let userScheme = proj.userData.first?.schemes.first {
+            return userScheme.name
+        } else if let sharedScheme = proj.sharedData?.schemes.first {
+            return sharedScheme.name
+        } else {
             Log.error("Cannot decide default scheme from project \(project)")
-            throw ExitCode.failure
-        }
-        switch output {
-        case .line(let firstTarget):
-            return firstTarget
-        case .errorLine(let errorMsg):
-            Log.error("Finding default scheme, but encountered an error: \(errorMsg)")
             throw ExitCode.failure
         }
     }
