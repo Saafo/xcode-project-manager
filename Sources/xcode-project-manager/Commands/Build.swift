@@ -45,6 +45,16 @@ struct Build: AsyncParsableCommand {
     @OptionGroup
     var saveOptions: SaveOptions
 
+    // MARK: - Private
+
+    private enum ExecName {
+        static let xcrun = "xcrun"
+        static let xcbeautify = "xcbeautify"
+        static let buildServer = "xcode-build-server"
+    }
+
+    // MARK: - Command
+
     func validate() throws {
         if workspace != nil, project != nil {
             throw ValidationError("Cannot specify workspace and project simultaneously")
@@ -117,18 +127,31 @@ struct Build: AsyncParsableCommand {
     }
 
     private func build() async throws {
-        guard let config = ConfigCenter.config else {
-            Log.error("Config not init")
-            return
-        }
-        switch config.build.mode {
+        let buildConfig = ConfigCenter.config.build
+        switch buildConfig.mode {
         case .xcodebuild:
-            try await xcodeBuild(with: config.build.xcodebuild)
+            try await checkNecessaryExecs(with: buildConfig.xcodebuild)
+            try await xcodeBuild(with: buildConfig.xcodebuild)
+        }
+    }
+
+    private func checkNecessaryExecs(with config: ConfigModel.Build.Xcodebuild) async throws {
+        var execList = [ExecName.xcrun]
+        if !config.noBeautify {
+            execList.append(ExecName.xcbeautify)
+        }
+        if config.generateBuildServerFile {
+            execList.append(ExecName.buildServer)
+        }
+        try execList.forEach { exec in
+            if Shell.findExecInPath(with: exec) == nil {
+                throw ValidationError("Cannot find \(exec) in PATH")
+            }
         }
     }
 
     private func xcodeBuild(with config: ConfigModel.Build.Xcodebuild) async throws {
-        var command = "xcrun xcodebuild"
+        var command = "set -o pipefail && \(ExecName.xcrun) xcodebuild"
         // TODO: move to ConfigModel
         if let workspace = config.workspace {
             command += " -workspace \(workspace)"
@@ -144,6 +167,11 @@ struct Build: AsyncParsableCommand {
             command += " -IDEBuildingContinueBuildingAfterErrors=YES"
         }
         command += " build"
+
+        if config.continueBuildingAfterErrors {
+            command += " -IDEBuildingContinueBuildingAfterErrors=YES"
+        }
+
         let time = Date().formatted(Date
             .ISO8601FormatStyle(timeZone: .current)
             .year().month().day()
@@ -159,16 +187,34 @@ struct Build: AsyncParsableCommand {
             .appendingPathComponent(time.description, isDirectory: true)
         try FileManager.default.createDirectory(at: buildLogDir, withIntermediateDirectories: true)
         let rawFilePath = buildLogDir.appendingPathComponent("xcodebuild-raw.log").path
-        let beautifyPath = buildLogDir.appendingPathComponent("xcodebuild-beautify.log").path
-        let run = "\(command) 2>&1 | tee \(rawFilePath) | xcbeautify | tee \(beautifyPath)"
-        Log.debug("Executing \(run)")
-        let outputStream = Shell.run(run)
-        for try await output in outputStream {
-            // TODO: remove old outputs to only show building tasks
-            // TODO: add xcbeautify's quiet and quieter options
-            print(output)
+        command += " 2>&1 | tee \(rawFilePath)"
+
+        if config.generateBuildServerFile {
+            command += " >(\(ExecName.buildServer) parse > /dev/null)"
         }
-        Log.info("The original build log is saved at \(rawFilePath), and the beautified log is saved at \(beautifyPath)")
+
+        let beautifyPath = buildLogDir.appendingPathComponent("xcodebuild-beautify.log").path
+        if !config.noBeautify {
+            command += " | \(ExecName.xcbeautify) | tee \(beautifyPath)"
+        }
+
+        Log.debug("Executing: \(command)")
+        let outputStream = Shell.run(command)
+        let printFinishingInfo = {
+            Log.info("The original build log is saved at \(rawFilePath), and the beautified log is saved at \(beautifyPath)")
+        }
+        do {
+            for try await output in outputStream {
+                // TODO: remove old outputs to only show building tasks
+                // TODO: add xcbeautify's quiet and quieter options
+                print(output)
+            }
+        } catch {
+            printFinishingInfo()
+            throw error
+        }
+        Log.debug("Finished executing: \(command)")
+        printFinishingInfo()
 
     }
 

@@ -64,4 +64,21 @@ enum Shell {
         }
         return result
     }
+
+    static func findExecInPath(with name: String) -> Path? {
+        guard let environmentPath = ProcessInfo.processInfo.environment["PATH"] else {
+            return nil
+        }
+
+        guard let executablePath =
+                environmentPath.split(separator: ":").lazy
+            .compactMap({ String($0).appending("/").appending(name) })
+            .first(where: {
+                FileManager.default.isExecutableFile(atPath: $0)
+            }) else {
+            return nil
+        }
+
+        return executablePath
+    }
 }

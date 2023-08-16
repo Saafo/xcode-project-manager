@@ -10,7 +10,7 @@ import Yams
 
 enum ConfigCenter {
 
-    internal static var config: ConfigModel?
+    internal static var config = ConfigModel()
 
     internal static func loadConfig() async throws -> ConfigModel {
         if let localConfig = try await loadLocalConfig() {

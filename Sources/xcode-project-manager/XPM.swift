@@ -15,6 +15,5 @@ struct XPM: AsyncParsableCommand {
     )
 
     mutating func run() async throws {
-        print(try? await ConfigCenter.loadConfig())
     }
 }
