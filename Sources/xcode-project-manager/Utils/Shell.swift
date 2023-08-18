@@ -9,6 +9,13 @@ import Foundation
 
 enum Shell {
 
+    enum Option {
+        enum LogTime {
+            case start, end, error
+        }
+        case logOn([LogTime])
+    }
+
     private struct Error: Swift.Error {
         var code: Int32
         var message: String
@@ -17,7 +24,8 @@ enum Shell {
     /// Run a shell command
     /// - Parameter command: the command to be run in current shell
     /// - Returns: output async sequence divided by line break
-    static func run(_ command: String) -> AsyncThrowingStream<String, Swift.Error> {
+    static func run(_ command: String, options: [Option] = [.logOn([.start])]
+    ) -> AsyncThrowingStream<String, Swift.Error> {
         AsyncThrowingStream<String, Swift.Error> { continuation in
             Task {
                 let shell = ProcessInfo.processInfo.environment["SHELL"] ?? "/bin/zsh"
@@ -31,16 +39,25 @@ enum Shell {
                 task.launchPath = shell
                 task.terminationHandler = { task in
                     if task.terminationStatus == 0 {
+                        if options.logTime.contains(.end) {
+                            Log.debug("Finish executing command: \(command)")
+                        }
                         continuation.finish()
                     } else {
                         let stdErr = String(data: errorPipe.fileHandleForReading.availableData, encoding: .utf8)
                         let error = Error(code: task.terminationStatus,
                                           message: "Run command '\(command)' failed, stdErr: \(stdErr ?? "nil")")
+                        if options.logTime.contains(.error) {
+                            Log.error("Executing command: \(command) with error: \(error)")
+                        }
                         continuation.finish(throwing: error)
                     }
                 }
 
                 do {
+                    if options.logTime.contains(.start) {
+                        Log.debug("Executing command: \(command)")
+                    }
                     try task.run()
 
                     for try await line in pipe.fileHandleForReading.bytes.lines {
@@ -53,8 +70,8 @@ enum Shell {
         }
     }
 
-    static func result(of command: String) async throws -> String {
-        let stream = run(command)
+    static func result(of command: String, options: [Option] = [.logOn([.start])]) async throws -> String {
+        let stream = run(command, options: options)
         var result = ""
         for try await line in stream {
             result.append(line + "\n")
@@ -65,7 +82,7 @@ enum Shell {
         return result
     }
 
-    static func findExecInPath(with name: String) -> Path? {
+    static func findExecInPath(with name: String) -> String? {
         guard let environmentPath = ProcessInfo.processInfo.environment["PATH"] else {
             return nil
         }
@@ -80,5 +97,16 @@ enum Shell {
         }
 
         return executablePath
+    }
+}
+
+private extension Array<Shell.Option> {
+    var logTime: [Shell.Option.LogTime] {
+        flatMap { element in
+            if case .logOn(let times) = element {
+                return times
+            }
+            return []
+        }
     }
 }

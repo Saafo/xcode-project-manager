@@ -198,8 +198,7 @@ struct Build: AsyncParsableCommand {
             command += " | \(ExecName.xcbeautify) | tee \(beautifyPath)"
         }
 
-        Log.debug("Executing: \(command)")
-        let outputStream = Shell.run(command)
+        let outputStream = Shell.run(command, options: [.logOn([.start, .end])])
         let printFinishingInfo = {
             Log.info("The original build log is saved at \(rawFilePath), and the beautified log is saved at \(beautifyPath)")
         }
@@ -213,7 +212,6 @@ struct Build: AsyncParsableCommand {
             printFinishingInfo()
             throw error
         }
-        Log.debug("Finished executing: \(command)")
         printFinishingInfo()
 
     }
@@ -254,6 +252,7 @@ struct Build: AsyncParsableCommand {
         guard let project else {
             throw ValidationError("Cannot find default scheme because no project found")
         }
+        // FIXME: This approach is not accurate enough.
         let proj = try XcodeProj(pathString: project)
         if let userScheme = proj.userData.first?.schemes.first {
             return userScheme.name
