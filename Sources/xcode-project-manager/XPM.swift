@@ -11,7 +11,7 @@ import ArgumentParser
 struct XPM: AsyncParsableCommand {
     static var configuration = CommandConfiguration(
         abstract: "Making Xcode project easier to setup, build and even run in a single command line tool",
-        subcommands: [Config.self, Build.self]
+        subcommands: [Config.self, Build.self, Clean.self]
     )
 
     mutating func run() async throws {
