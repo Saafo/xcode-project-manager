@@ -34,8 +34,14 @@ struct ConfigModel: Codable {
             }
             var configuration: Configuration = .debug
             enum SDK: String, Codable {
-                case iphoneos
-                case iphonesimulator
+                case iphoneos, ios
+                case iphonesimulator, isim
+                var parameterName: String {
+                    switch self {
+                    case .iphoneos, .ios: return "iphoneos"
+                    case .iphonesimulator, .isim: return "iphonesimulator"
+                    }
+                }
             }
             var sdk: SDK = .iphonesimulator
             var noBeautify: Bool = false

@@ -162,7 +162,7 @@ struct Build: AsyncParsableCommand {
             command += " -scheme \(scheme)"
         }
         command += " -configuration \(config.configuration.commandValue)"
-        command += " -sdk \(config.sdk.rawValue)"
+        command += " -sdk \(config.sdk.parameterName)"
         command += " build"
 
         if config.continueBuildingAfterErrors {
