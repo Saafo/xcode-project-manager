@@ -251,9 +251,7 @@ struct Build: AsyncParsableCommand {
         }
         // FIXME: This approach is not accurate enough.
         let proj = try XcodeProj(pathString: project)
-        if let userScheme = proj.userData.first?.schemes.first {
-            return userScheme.name
-        } else if let sharedScheme = proj.sharedData?.schemes.first {
+        if let sharedScheme = proj.sharedData?.schemes.first(where: { $0.wasCreatedForAppExtension != true }) {
             return sharedScheme.name
         } else {
             Log.error("Cannot decide default scheme from project \(project)")
