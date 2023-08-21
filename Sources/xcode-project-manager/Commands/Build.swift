@@ -163,9 +163,6 @@ struct Build: AsyncParsableCommand {
         }
         command += " -configuration \(config.configuration.commandValue)"
         command += " -sdk \(config.sdk.rawValue)"
-        if config.continueBuildingAfterErrors {
-            command += " -IDEBuildingContinueBuildingAfterErrors=YES"
-        }
         command += " build"
 
         if config.continueBuildingAfterErrors {
