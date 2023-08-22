@@ -16,7 +16,7 @@ struct SaveOptions: ParsableArguments {
 
     func checkOptionsValid() throws {
         if save, noSave {
-            throw ValidationError("Cannot specify `--save` and `--no-save` simultaneously")
+            throw ValidationError(tint: "Cannot specify `--save` and `--no-save` simultaneously")
         }
     }
 
