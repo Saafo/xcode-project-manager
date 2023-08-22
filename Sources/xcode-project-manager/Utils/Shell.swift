@@ -46,15 +46,14 @@ enum Shell {
                         continuation.finish()
                     } else {
                         let stdErr = String(data: errorPipe.fileHandleForReading.availableData, encoding: .utf8)
-                        let error = Error(code: task.terminationStatus,
-                                          message: "Run command '\(command)' failed, stdErr: \(stdErr ?? "nil")")
+                        let errorMsg = "Execute command '\(command)' failed, stdErr: \(stdErr ?? "nil")"
                         if options.logTime.contains(.error) {
-                            var errorMsg = "Executing command: \(command) with error: \(error)"
-                            if !options.contains(.noTintError) {
-                                errorMsg = errorMsg.tint(with: .red)
-                            }
                             Log.error(errorMsg)
                         }
+                        let error = Error(code: task.terminationStatus,
+                                          message: options.contains(.noTintError)
+                                          ? errorMsg
+                                          : errorMsg.tint(with: .red))
                         continuation.finish(throwing: error)
                     }
                 }
