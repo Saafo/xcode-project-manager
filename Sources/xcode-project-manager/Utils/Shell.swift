@@ -103,6 +103,12 @@ enum Shell {
 
         return executablePath
     }
+
+    enum ExecName {
+        static let xcrun = "xcrun"
+        static let xcbeautify = "xcbeautify"
+        static let buildServer = "xcode-build-server"
+    }
 }
 
 private extension Array<Shell.Option> {
