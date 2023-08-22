@@ -9,11 +9,12 @@ import Foundation
 
 enum Shell {
 
-    enum Option {
+    enum Option: Equatable {
         enum LogTime {
             case start, end, error
         }
         case logOn([LogTime])
+        case noTintError
     }
 
     private struct Error: Swift.Error {
@@ -48,7 +49,11 @@ enum Shell {
                         let error = Error(code: task.terminationStatus,
                                           message: "Run command '\(command)' failed, stdErr: \(stdErr ?? "nil")")
                         if options.logTime.contains(.error) {
-                            Log.error("Executing command: \(command) with error: \(error)")
+                            var errorMsg = "Executing command: \(command) with error: \(error)"
+                            if !options.contains(.noTintError) {
+                                errorMsg = errorMsg.tint(with: .red)
+                            }
+                            Log.error(errorMsg)
                         }
                         continuation.finish(throwing: error)
                     }
