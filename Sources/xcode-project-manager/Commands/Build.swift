@@ -68,7 +68,7 @@ struct Build: AsyncParsableCommand {
     }
 
     private func updateConfig() async throws {
-        var config = try await ConfigCenter.loadConfig()
+        var config = try await ConfigService.loadConfig()
         let shouldSave = saveOptions.shouldSave(autoSave: config.config.autoChange)
 
         if let workspace {
@@ -117,17 +117,17 @@ struct Build: AsyncParsableCommand {
             config.build.xcodebuild.continueBuildingAfterErrors = continueBuildingAfterErrors
         }
 
-        ConfigCenter.config = config
+        ConfigService.config = config
 
         if shouldSave {
             Task { [config] in
-                try await ConfigCenter.updateLocalConfig(config)
+                try await ConfigService.updateLocalConfig(config)
             }
         }
     }
 
     private func build() async throws {
-        let buildConfig = ConfigCenter.config.build
+        let buildConfig = ConfigService.config.build
         switch buildConfig.mode {
         case .xcodebuild:
             try await checkNecessaryExecs(with: buildConfig.xcodebuild)

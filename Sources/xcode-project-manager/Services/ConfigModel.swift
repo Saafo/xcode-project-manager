@@ -8,24 +8,32 @@
 import ArgumentParser
 
 struct ConfigModel: Codable {
+
     struct Config: Codable {
         var autoChange: Bool = true
     }
+
     struct Install: Codable {
+
         enum Mode: String, Codable {
             case cocoapods
         }
         var mode: Mode = .cocoapods
     }
+
     struct Build: Codable {
+
         enum Mode: String, Codable {
             case xcodebuild
         }
         var mode: Mode = .xcodebuild
+
         struct Xcodebuild: Codable {
+
             var workspace: String?
             var project: String?
             var scheme: String?
+
             enum Configuration: String, Codable {
                 case debug, release
                 var commandValue: String {
@@ -33,6 +41,7 @@ struct ConfigModel: Codable {
                 }
             }
             var configuration: Configuration = .debug
+
             enum SDK: String, Codable {
                 case iphoneos, ios
                 case iphonesimulator, isim
@@ -44,7 +53,9 @@ struct ConfigModel: Codable {
                 }
             }
             var sdk: SDK = .iphonesimulator
+
             var noBeautify: Bool = false
+
             enum LogLevel: String, Codable {
                 case error, warning, message
             }
@@ -54,6 +65,7 @@ struct ConfigModel: Codable {
         }
         var xcodebuild = Xcodebuild()
     }
+
     struct Run: Codable {} // TODO
     struct Exec: Codable {} // TODO
 
