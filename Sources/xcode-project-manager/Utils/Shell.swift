@@ -86,6 +86,11 @@ enum Shell {
         return result
     }
 
+    @inline(__always)
+    static func findExecInPath(with name: ExecName) -> String? {
+        findExecInPath(with: name.rawValue)
+    }
+
     static func findExecInPath(with name: String) -> String? {
         guard let environmentPath = ProcessInfo.processInfo.environment["PATH"] else {
             return nil
@@ -103,10 +108,11 @@ enum Shell {
         return executablePath
     }
 
-    enum ExecName {
-        static let xcrun = "xcrun"
-        static let xcbeautify = "xcbeautify"
-        static let buildServer = "xcode-build-server"
+    enum ExecName: String {
+        case xcrun
+        case xcodebuild
+        case xcbeautify
+        case buildServer = "xcode-build-server"
     }
 }
 
