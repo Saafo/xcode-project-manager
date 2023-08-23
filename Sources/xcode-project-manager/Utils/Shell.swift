@@ -14,7 +14,6 @@ enum Shell {
             case start, end, error
         }
         case logOn([LogTime])
-        case noTintError
     }
 
     private struct Error: Swift.Error {
@@ -50,10 +49,7 @@ enum Shell {
                         if options.logTime.contains(.error) {
                             Log.error(errorMsg)
                         }
-                        let error = Error(code: task.terminationStatus,
-                                          message: options.contains(.noTintError)
-                                          ? errorMsg
-                                          : errorMsg.tint(with: .red))
+                        let error = Error(code: task.terminationStatus, message: errorMsg)
                         continuation.finish(throwing: error)
                     }
                 }
