@@ -80,7 +80,7 @@ enum XcodebuildService {
         }
     }
 
-    static var generalBuildParameters: String {
+    static var commonBuildParameters: String {
         get async throws {
             let config = try await ConfigService.config.build.xcodebuild
             var parameters = ""

@@ -99,7 +99,7 @@ struct Build: AsyncParsableCommand {
 
     private func xcodeBuild(with config: ConfigModel.Build.Xcodebuild) async throws {
         var command = "set -o pipefail && \(Shell.ExecName.xcrun) xcodebuild"
-        command += " \(try await XcodebuildService.generalBuildParameters)"
+        command += " \(try await XcodebuildService.commonBuildParameters)"
         command += " build"
 
         let time = Date().formatted(Date
