@@ -10,9 +10,20 @@ import Yams
 
 enum ConfigService {
 
-    internal static var config = ConfigModel()
+    internal static var config: ConfigModel {
+        get async throws {
+            if let _config {
+                return _config
+            } else {
+                let loadConfig = try await loadConfig()
+                _config = loadConfig
+                return loadConfig
+            }
+        }
+    }
+    private static var _config: ConfigModel?
 
-    internal static func loadConfig() async throws -> ConfigModel {
+    private static func loadConfig() async throws -> ConfigModel {
         if let localConfig = try await loadLocalConfig() {
             return localConfig
         } else {
@@ -21,6 +32,10 @@ enum ConfigService {
             try await updateLocalConfig(globalConfig)
             return globalConfig
         }
+    }
+
+    internal static func updateRuntimeConfig(_ model: ConfigModel) {
+        _config = model
     }
 
     internal static func updateLocalConfig(_ model: ConfigModel) async throws {

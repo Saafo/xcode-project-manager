@@ -22,7 +22,7 @@ enum XcodebuildService {
         continueBuildingAfterErrors: Bool,
         saveOptions: SaveOptions
     ) async throws {
-        var config = try await ConfigService.loadConfig()
+        var config = try await ConfigService.config
         let shouldSave = saveOptions.shouldSave(autoSave: config.config.autoChange)
 
         if let workspace {
@@ -71,7 +71,7 @@ enum XcodebuildService {
             config.build.xcodebuild.continueBuildingAfterErrors = continueBuildingAfterErrors
         }
 
-        ConfigService.config = config
+        ConfigService.updateRuntimeConfig(config)
 
         if shouldSave {
             Task { [config] in
@@ -82,7 +82,7 @@ enum XcodebuildService {
 
     static var generalBuildParameters: String {
         get async throws {
-            let config = ConfigService.config.build.xcodebuild
+            let config = try await ConfigService.config.build.xcodebuild
             var parameters = ""
             if let workspace = config.workspace {
                 parameters += "-workspace \(workspace)"
@@ -103,7 +103,7 @@ enum XcodebuildService {
 
     static var derivedDataPath: String {
         get async throws {
-            let config = ConfigService.config.build.xcodebuild
+            let config = try await ConfigService.config.build.xcodebuild
             let projectCommand: String
             if let workspace = config.workspace {
                 projectCommand = "-workspace \(workspace)"

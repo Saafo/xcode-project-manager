@@ -74,7 +74,7 @@ struct Build: AsyncParsableCommand {
     }
 
     private func build() async throws {
-        let buildConfig = ConfigService.config.build
+        let buildConfig = try await ConfigService.config.build
         switch buildConfig.mode {
         case .xcodebuild:
             try await checkNecessaryExecs(with: buildConfig.xcodebuild)

@@ -11,7 +11,7 @@ import ArgumentParser
 struct Clean: AsyncParsableCommand {
 
     mutating func run() async throws {
-        let config = try await ConfigService.loadConfig()
+        let config = try await ConfigService.config
         switch config.build.mode {
         case .xcodebuild:
             try await cleanXcodeDerivedData(config: config.build.xcodebuild)
