@@ -10,6 +10,11 @@ import ArgumentParser
 
 struct Clean: AsyncParsableCommand {
 
+    static let configuration: CommandConfiguration = .init(
+        abstract: "Clean build cache",
+        discussion: "Currently it is used for trashing xcodebuild's derived data folder"
+    )
+
     mutating func run() async throws {
         let config = try await ConfigService.config
         switch config.build.mode {

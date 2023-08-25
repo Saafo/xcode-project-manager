@@ -9,6 +9,15 @@ import Foundation
 import ArgumentParser
 
 struct Build: AsyncParsableCommand {
+
+    static let configuration: CommandConfiguration = .init(
+        abstract: "Build your Xcode project in a short command",
+        discussion: """
+            You can simple use `xpm build` to build your Xcode project. \
+            If you want to customize any parameter, just specify it or write it into config file.
+            """
+    )
+
     // MARK: - Project
     @Option(name: [.long, .short])
     var workspace: String?
