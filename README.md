@@ -18,6 +18,10 @@ Specifically, `xpm` makes the most commonly used commands easier to execute. Exa
 >
 > If you meet any issue or have any feature idea, feel free to open up an issue!
 
+## Install
+
+Currently you can install `xpm` by donloading it from the [Releases](https://github.com/Saafo/xcode-project-manager/releases) page, and put it to `/usr/local/bin/` folder. We will make it available on Homebrew in the future.
+
 ## Usage
 
 `Xcode Project Manager` provides the following features as subcommands:
