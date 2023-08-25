@@ -9,18 +9,29 @@ Specifically, `xpm` makes the most commonly used commands easier to execute. Exa
 - You can simply run `xpm build` now to avoid typing the very very long `xcodebuild -workspace XPM.xcworkspace -scheme xpm -configuration Debug -sdk iphoneos build` command each time you build. `xpm` will remember the default option you choose by writing to a config file locally or globally, it will even guess the options first time you run it.
 - You can simply run `xpm install` instead of `bundle install && bundle exec pod install`.
 
+> [!IMPORTANT]
+> **Current Status**
+>
+> `Xcode Project Manager` currently is at the very beginning stage, only very basical and limited feature is provided, like `build` and `clean`. But we're keep on moving! You can track the progress in the [Milestones](https://github.com/Saafo/xcode-project-manager/milestones) page. Feel free to tell us there what you eager to use so we can consider speeding it up!
+>
+> If you're interested in this project, give it a star or just watch its releases, and feel free to post how you think and feel in [Discussions](https://github.com/Saafo/xcode-project-manager/discussions).
+>
+> If you meet any issue or have any feature idea, feel free to open up an issue!
+
 ## Usage
 
 `Xcode Project Manager` provides the following features as subcommands:
 
-- config
-- install
-- build
-- docbuild
-- run
-- exec
-- print
-- clean
+| Command  | Status             |
+| -------- | ------------------ |
+| config   | 🚧 not ready yet   |
+| install  | 🚧 not ready yet   |
+| build    | 🚀 basically ready |
+| docbuild | 🚧 not ready yet   |
+| run      | 🚧 not ready yet   |
+| exec     | 🚧 not ready yet   |
+| print    | 🚀 basically ready |
+| clean    | 🚀 basically ready |
 
 ### xpm config
 
@@ -53,11 +64,11 @@ exec:
     hello: echo 'hello world' # just an example.
 ```
 
-You can also run `xpm config --local config.autoChange false` to change the config.
+You can also run `xpm config --local config.autoChange false` to change the config(🚧 not ready yet).
 
 And you can also configure some basic configs(like autoChange and mode) at `~/.xpm.yml`. The global config file is used when generating new `.xpm.yml` in your project.
 
-### xpm install
+### xpm install(🚧 not ready yet)
 
 `xpm install` helps to setup your project (like resolving and downloading all dependencies) in a single command.
 
@@ -91,11 +102,11 @@ Besides, the most different thing is that, you can update configs in the config 
 
 For DocC documentation generating, similar as xcodebuild docbuild.
 
-### xpm run
+### xpm run(🚧 not ready yet)
 
 `xpm run` mainly aggregating `simctl` and `ios-deploy` for simulator and device running into a single command.
 
-### xpm exec
+### xpm exec(🚧 not ready yet)
 
 Used as executing shell scripts configured in `exec.scripts`.
 
