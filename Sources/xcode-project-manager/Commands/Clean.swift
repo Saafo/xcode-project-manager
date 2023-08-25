@@ -30,9 +30,9 @@ struct Clean: AsyncParsableCommand {
         let derivedDataPath = try await XcodebuildService.derivedDataPath
 
         Log.warning("""
-will move DerivedData folder of current project(\(projectName)) to trash:
-\(try await Shell.result(of: "du -sh \(derivedDataPath)", options: []))
-""")
+            will move DerivedData folder of current project(\(projectName)) to trash:
+            \(try await Shell.result(of: "du -sh \(derivedDataPath)", options: []))
+            """)
         try FileManager.default.trashItem(at: URL(fileURLWithPath: derivedDataPath), resultingItemURL: nil)
     }
 }

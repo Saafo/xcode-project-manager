@@ -118,9 +118,9 @@ enum XcodebuildService {
 
             let filterCommand = #"grep -m 1 "BUILD_DIR" | grep -oEi "\/.*" | sed 's#/Build/Products##'"#
             let command = """
-\(Shell.ExecName.xcrun) \(Shell.ExecName.xcodebuild) \(projectCommand) \
--scheme \(scheme) -showBuildSettings 2<&1 | \(filterCommand)
-"""
+                \(Shell.ExecName.xcrun) \(Shell.ExecName.xcodebuild) \(projectCommand) \
+                -scheme \(scheme) -showBuildSettings 2<&1 | \(filterCommand)
+                """
             let derivedDataPath = try await Shell.result(of: command, options: [])
             return derivedDataPath
         }
@@ -131,9 +131,9 @@ enum XcodebuildService {
             let commonParameters = try await commonBuildParameters
             let filterCommand = #"grep -m 1 "CODESIGNING_FOLDER_PATH" | grep -oEi "\/.*""#
             let command = """
-\(Shell.ExecName.xcrun) \(Shell.ExecName.xcodebuild) \
-\(commonParameters) -showBuildSettings 2<&1 | \(filterCommand)
-"""
+                \(Shell.ExecName.xcrun) \(Shell.ExecName.xcodebuild) \
+                \(commonParameters) -showBuildSettings 2<&1 | \(filterCommand)
+                """
             let productPath = try await Shell.result(of: command, options: [])
             return productPath
         }

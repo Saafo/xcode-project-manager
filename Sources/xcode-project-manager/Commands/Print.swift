@@ -16,9 +16,9 @@ struct Print: AsyncParsableCommand {
     }
 
     @Argument(help: """
-Current valid content includes(Long - Short form):
-\(Content.allValueStrings)
-""")
+        Current valid content includes(Long - Short form):
+        \(Content.allValueStrings)
+        """)
     var content: Content
 
     func run() async throws {
