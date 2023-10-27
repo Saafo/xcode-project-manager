@@ -16,9 +16,10 @@ struct Clean: AsyncParsableCommand {
     )
 
     mutating func run() async throws {
-        let config = try await ConfigService.config
+        var config = try await ConfigService.config
         switch config.build.mode {
         case .xcodebuild:
+            try await XcodebuildService.updateDefaultWorkspaceOrProjectIfNeeded(config: &config)
             try await cleanXcodeDerivedData(config: config.build.xcodebuild)
         }
     }

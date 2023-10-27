@@ -31,21 +31,7 @@ enum XcodebuildService {
         if let project {
             config.build.xcodebuild.project = project
         }
-        if config.build.xcodebuild.workspace == nil, config.build.xcodebuild.project == nil {
-            async let defaultWorkspace = XcodeprojService.findDefaultWorkspace()
-            async let defaultProject = XcodeprojService.findDefaultProject()
-            if let defaultWorkspace = try await defaultWorkspace {
-                config.build.xcodebuild.workspace = defaultWorkspace
-                Log.info("Use \(defaultWorkspace) as default workspace")
-            }
-            if let defaultProject = try await defaultProject {
-                config.build.xcodebuild.project = defaultProject
-                Log.info("Use \(defaultProject) as default project")
-            }
-            if config.build.xcodebuild.workspace == nil, config.build.xcodebuild.project == nil {
-                throw ValidationError(tint: "Neither configured, nor found any available workspace or project in current folder")
-            }
-        }
+        try await updateDefaultWorkspaceOrProjectIfNeeded(config: &config)
         if let scheme {
             config.build.xcodebuild.scheme = scheme
         }
@@ -76,6 +62,24 @@ enum XcodebuildService {
         if shouldSave {
             Task { [config] in
                 try await ConfigService.updateLocalConfig(config)
+            }
+        }
+    }
+
+    static func updateDefaultWorkspaceOrProjectIfNeeded(config: inout ConfigModel) async throws {
+        if config.build.xcodebuild.workspace == nil, config.build.xcodebuild.project == nil {
+            async let defaultWorkspace = XcodeprojService.findDefaultWorkspace()
+            async let defaultProject = XcodeprojService.findDefaultProject()
+            if let defaultWorkspace = try await defaultWorkspace {
+                config.build.xcodebuild.workspace = defaultWorkspace
+                Log.info("Use \(defaultWorkspace) as default workspace")
+            }
+            if let defaultProject = try await defaultProject {
+                config.build.xcodebuild.project = defaultProject
+                Log.info("Use \(defaultProject) as default project")
+            }
+            if config.build.xcodebuild.workspace == nil, config.build.xcodebuild.project == nil {
+                throw ValidationError(tint: "Neither configured, nor found any available workspace or project in current folder")
             }
         }
     }
