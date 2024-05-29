@@ -107,7 +107,7 @@ struct Build: AsyncParsableCommand {
     }
 
     private func xcodeBuild(with config: ConfigModel.Build.Xcodebuild) async throws {
-        var command = "set -o pipefail && \(Shell.ExecName.xcrun) xcodebuild"
+        var command = "set -o pipefail && \(Shell.ExecName.xcrun.rawValue) xcodebuild"
         command += " \(try await XcodebuildService.commonBuildParameters)"
         command += " build"
 
@@ -129,12 +129,12 @@ struct Build: AsyncParsableCommand {
         command += " 2>&1 | tee \(rawFilePath)"
 
         if config.generateBuildServerFile {
-            command += " >(\(Shell.ExecName.buildServer) parse > /dev/null)"
+            command += " >(\(Shell.ExecName.buildServer.rawValue) parse > /dev/null)"
         }
 
         let beautifyPath = buildLogDir.appendingPathComponent("xcodebuild-beautify.log").path
         if !config.noBeautify {
-            command += " | \(Shell.ExecName.xcbeautify) | tee \(beautifyPath)"
+            command += " | \(Shell.ExecName.xcbeautify.rawValue) | tee \(beautifyPath)"
         }
 
         let outputStream = Shell.run(command, options: [.logOn([.start, .end])])
