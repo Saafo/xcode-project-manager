@@ -28,10 +28,10 @@ struct Build: AsyncParsableCommand {
     @Option(name: [.long, .short])
     var scheme: String?
 
-    @Option(name: [.long, .short])
+    @Option(name: [.long, .short], help: "Supported configuration: debug, release")
     var configuration: ConfigModel.Build.Xcodebuild.Configuration?
 
-    @Option
+    @Option(help: "Current supported SDKs: isim(iphonesimulator), ios(iphoneos)")
     var sdk: ConfigModel.Build.Xcodebuild.SDK?
 
     @Option
