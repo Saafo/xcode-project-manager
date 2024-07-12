@@ -97,7 +97,7 @@ enum XcodebuildService {
                 parameters += " -scheme \(scheme)"
             }
             parameters += " -configuration \(config.configuration.commandValue)"
-            parameters += " -sdk \(config.sdk.parameterName)"
+            parameters += " -sdk \(config.sdk.rawValue)"
             parameters += " -arch \(try await getArchArg(sdk: config.sdk))"
             if config.continueBuildingAfterErrors {
                 parameters += " -IDEBuildingContinueBuildingAfterErrors=YES"
@@ -146,9 +146,9 @@ enum XcodebuildService {
 
     private static func getArchArg(sdk: ConfigModel.Build.Xcodebuild.SDK) async throws -> String {
         switch sdk {
-        case .ios, .iphoneos:
+        case .iphoneos:
             return "arm64"
-        case .isim, .iphonesimulator:
+        case .iphonesimulator:
             let archCommand = "machine"
             let currentArch = try await Shell.result(of: archCommand, options: [])
             switch currentArch {

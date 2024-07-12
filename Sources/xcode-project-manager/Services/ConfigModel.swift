@@ -42,15 +42,9 @@ struct ConfigModel: Codable {
             }
             var configuration: Configuration = .debug
 
-            enum SDK: String, Codable {
-                case iphoneos, ios
-                case iphonesimulator, isim
-                var parameterName: String {
-                    switch self {
-                    case .iphoneos, .ios: return "iphoneos"
-                    case .iphonesimulator, .isim: return "iphonesimulator"
-                    }
-                }
+            enum SDK: String {
+                case iphoneos
+                case iphonesimulator
             }
             var sdk: SDK = .iphonesimulator
 
@@ -75,5 +69,29 @@ struct ConfigModel: Codable {
 }
 
 extension ConfigModel.Build.Xcodebuild.Configuration: ExpressibleByArgument {}
-extension ConfigModel.Build.Xcodebuild.SDK: ExpressibleByArgument {}
 extension ConfigModel.Build.Xcodebuild.LogLevel: ExpressibleByArgument {}
+extension ConfigModel.Build.Xcodebuild.SDK: ExpressibleByArgument, Codable {
+    init?(argument: String) {
+        switch argument {
+        case "ios": self = .iphoneos
+        case "isim": self = .iphonesimulator
+        default:
+            if let instance = Self(rawValue: argument) {
+                self = instance
+            } else {
+                return nil
+            }
+        }
+    }
+    init(from decoder: Decoder) throws {
+        let stringValue = try decoder.singleValueContainer().decode(String.self)
+        if let instance = Self(argument: stringValue) {
+            self = instance
+        } else {
+            throw Error.decodingValueInvalid
+        }
+    }
+    enum Error: Swift.Error {
+        case decodingValueInvalid
+    }
+}
